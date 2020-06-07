@@ -61,6 +61,10 @@ def get_words_from_book(book_filename):
             print("No book available at this address.")
             return None  
 
+        if book_is_index(f):
+            print("Not a valid book")
+            return None
+
         title = get_info("Title", f)
         author = get_info("Author", f)
         language = get_info("Language", f)
@@ -83,6 +87,14 @@ def get_words_from_book(book_filename):
 
         words = re.split(" ", text_selection)
         return words
+
+def book_is_index(file):
+    head = str(file.readlines(5))
+
+    return ("multi volume index file" in head)
+        
+
+
 
 if __name__ == "__main__":
     main()

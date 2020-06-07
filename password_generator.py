@@ -34,7 +34,7 @@ def build_password(word_dict, simple=True):
 
 def make_password_from_line(words, password_length):
     try:
-        phrase_position = random.randint(0, len(words)-8)
+        phrase_position = random.randint(1, len(words)-8)
 
         password = words[phrase_position]
 
@@ -49,7 +49,7 @@ def make_password_from_line(words, password_length):
     except ValueError:
         password = ""
 
-        for i in range(len(words)):
+        for i in range(1, len(words)):
             password = password + words[i] + variability_symbol()
         
         while len(password) < password_length:
