@@ -14,21 +14,21 @@ def main():
 
         print("Trying " + book_filename)
 
-        words = get_words_from_book(book_filename)
+        words, title, author = get_words_from_book(book_filename)
 
         while words is None:
             remove_book(book_filename)
             book_num = str(random.randint(10000,33000))
             book_filename = get_book_file(book_num)
             print("New file: " + book_filename)
-            words = get_words_from_book(book_filename)
+            words, title, author = get_words_from_book(book_filename)
 
         print(words)
 
         password = make_password_from_line(words, PASSWORD_LENGTH)
         print(password)
 
-        return password
+        return password + " [Generated using " + title + " by " + author + "]"
 
 def remove_book(book_filename):
     os.remove(book_filename)
@@ -59,11 +59,11 @@ def get_words_from_book(book_filename):
 
         if "DOCTYPE HTML PUBLIC" in line:
             print("No book available at this address.")
-            return None  
+            return None, None, None
 
         if book_is_index(f):
             print("Not a valid book")
-            return None
+            return None, None, None
 
         title = get_info("Title", f)
         author = get_info("Author", f)
@@ -71,22 +71,22 @@ def get_words_from_book(book_filename):
 
         if "English" not in language:
             print("Non-English title")
-            return None
+            return None, None, None
 
         f.seek(5000)
 
         try:
-            text_selection = f.readline()
+            text_selection = str(f.readline())
             
             while len(text_selection) < 70:
-                text_selection = readline() 
+                text_selection = str(f.readline()) 
 
             print(text_selection)
         except:
             pass
 
         words = re.split(" ", text_selection)
-        return words
+        return words, title, author
 
 def book_is_index(file):
     head = str(file.readlines(5))

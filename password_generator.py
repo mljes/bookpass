@@ -51,7 +51,10 @@ def make_password_from_line(words, password_length):
 
         for i in range(1, len(words)):
             password = password + words[i] + variability_symbol()
-        
+
+            if len(password) >= password_length:
+                break
+            
         while len(password) < password_length:
             password = password + variability_symbol()
 
@@ -65,9 +68,7 @@ def variability_symbol():
     do_add_symbol = (random.randint(0, 10)) % 2 == 0
 
     if do_add_symbol:
-        use_longer_range = (random.randint(0, 10)) % 2 == 0
-
-        return random_char(use_longer_range)
+        return random_char(True)
     else:
         return ""
 
