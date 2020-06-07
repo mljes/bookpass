@@ -25,6 +25,8 @@ def main():
         password = make_password_from_line(words, PASSWORD_LENGTH)
         print(password)
 
+        return password
+
 def remove_book(book_filename):
     os.remove(book_filename)
 
