@@ -12,13 +12,16 @@ def main():
         book_num = str(random.randint(10000,33000))
         book_filename = get_book_file(book_num)
 
-        print(book_filename)
+        print("Trying " + book_filename)
 
         words = get_words_from_book(book_filename)
 
-        if words is None:
+        while words is None:
             remove_book(book_filename)
-            quit()
+            book_num = str(random.randint(10000,33000))
+            book_filename = get_book_file(book_num)
+            print("New file: " + book_filename)
+            words = get_words_from_book(book_filename)
 
         print(words)
 
@@ -56,7 +59,7 @@ def get_words_from_book(book_filename):
 
         if "DOCTYPE HTML PUBLIC" in line:
             print("No book available at this address.")
-            return None
+            return None  
 
         title = get_info("Title", f)
         author = get_info("Author", f)
@@ -71,7 +74,7 @@ def get_words_from_book(book_filename):
         try:
             text_selection = f.readline()
             
-            while text_selection == "\n" or len(text_selection) < 70:
+            while len(text_selection) < 70:
                 text_selection = readline() 
 
             print(text_selection)
