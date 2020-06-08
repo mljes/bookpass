@@ -4,4 +4,4 @@ app = Flask(__name__)
 
 @app.route("/passwordplease")
 def get_password():
-    return "Here is a password! " + main()
+    return "Here is a password! " + main() + "\n"

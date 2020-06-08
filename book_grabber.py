@@ -2,8 +2,8 @@ import random
 import requests
 import tokenize
 import re
-from letter_translator import LETTER_TRANSLATOR
-from password_generator import swap_symbols, make_password_from_line, random_char
+from common import LETTER_TRANSLATOR
+from password_generator import swap_symbols, make_password_from_line
 import os
 
 PASSWORD_LENGTH = 15
@@ -26,6 +26,7 @@ def main():
         print(words)
 
         password = make_password_from_line(words, PASSWORD_LENGTH)
+
         print(password)
 
         return password + " [Generated using " + title + " by " + author + "]"
@@ -54,6 +55,10 @@ def get_book_file(book_num):
     return book_filename
 
 def get_words_from_book(book_filename):
+    words = []
+    title = ""
+    author = ""
+
     with open(book_filename, 'r') as f:
         line = str(f.readline())
 
@@ -86,14 +91,16 @@ def get_words_from_book(book_filename):
             pass
 
         words = re.split(" ", text_selection)
-        return words, title, author
+
+    print(f"Closing and deleting file {book_filename}, '{title}'")
+    remove_book(book_filename)
+
+    return words, title, author
 
 def book_is_index(file):
     head = str(file.readlines(5))
 
     return ("multi volume index file" in head)
-        
-
 
 
 if __name__ == "__main__":

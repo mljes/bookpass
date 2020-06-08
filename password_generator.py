@@ -1,4 +1,5 @@
 import random
+from common import SYMBOLS
 
 def swap_symbols(password):
     new_password = ""
@@ -13,26 +14,11 @@ def swap_symbols(password):
     return new_password
 
 
-def build_password(word_dict, simple=True):
-    dict_section = word_dict[str(random.randint(2,8))]
-    password = dict_section[random.randint(0, len(dict_section)-1)]
-    used_words = []
-
-    while len(password) < PASSWORD_LENGTH:
-        dict_section = word_dict[str(random.randint(2,8))]
-        new_word = dict_section[random.randint(0, len(dict_section)-1)]
-
-        if simple:
-            password = password + random_char(len(new_word) % 2 == 0)
-
-        if not new_word in used_words:
-            password = password + new_word
-            used_words.append(new_word)
-
-    return password
-
-
 def make_password_from_line(words, password_length):
+    contains_symbol = False
+    contains_capital = False
+    contains_number = False
+    
     try:
         phrase_position = random.randint(1, len(words)-8)
 
@@ -40,17 +26,29 @@ def make_password_from_line(words, password_length):
 
         phrase_position = phrase_position + 1
         while len(password) < password_length:
-            password = password + variability_symbol() + words[phrase_position]
+            password, contains_symbol, contains_capital, contains_number = add_word_to_password(
+                password, 
+                words[phrase_position], 
+                contains_symbol, 
+                contains_capital, 
+                contains_number
+            )
 
             phrase_position = phrase_position + 1
 
-        return password + variability_symbol()
+        return password
 
     except ValueError:
         password = ""
 
         for i in range(1, len(words)):
-            password = password + words[i] + variability_symbol()
+            password,contains_symbol, contains_capital, contains_number = add_word_to_password(
+                password, 
+                words[phrase_position], 
+                contains_symbol, 
+                contains_capital, 
+                contains_number
+            )
 
             if len(password) >= password_length:
                 break
@@ -61,16 +59,32 @@ def make_password_from_line(words, password_length):
             if len(password) >= password_length:
                 break
 
-        return sanitize_password(password + random_char(False))
+        return sanitize_password(password + variability_symbol())
 
+def add_word_to_password(password, word, contains_symbol, contains_capital, contains_number):
+    do_add_capital = get_random_bool()
+    word_to_add = (word if do_add_capital else add_capital_letter(word))
+    print(f"Adding {word_to_add} to password")
+    symbol_to_add, symbol_type = variability_symbol()
+
+    contains_symbol = contains_symbol or (symbol_type == "SYMBOL")
+    contains_capital = contains_capital or do_add_capital
+    contains_number = contains_number or (symbol_type == "NUMBER")
+
+    password = password + symbol_to_add + word_to_add
+    
+    return password, contains_symbol, contains_capital, contains_number
+
+def get_random_bool():
+    return random.randint(0,10) % 2 == 0
 
 def variability_symbol():
-    do_add_symbol = (random.randint(0, 10)) % 2 == 0
+    do_add_symbol = get_random_bool()
 
     if do_add_symbol:
-        return random_char(True)
+        return SYMBOLS[random.randint(0, len(SYMBOLS)-1)], "SYMBOL"
     else:
-        return ""
+        return str(random.randint(0,9)), "NUMBER"
 
 
 def sanitize_password(password):
@@ -82,10 +96,24 @@ def sanitize_password(password):
 
     return clean_password
 
-def random_char(use_range_with_numbers=True):
-    if use_range_with_numbers:
-        random_num = random.randint(42, 64)
-        random_num = random_num if random_num != 34 else 33 #avoid punctuation marks
-        return chr(random_num)
-    else:
-        return chr(random.randint(33, 38))
+
+def add_capital_letter(password):
+    print("Capitalizing " + password)
+    
+    if len(password) == 1:
+        return password.upper()
+    else: 
+        return password[0].upper() + password[1:len(password)]
+
+
+def add_number(password):
+    pass
+
+def add_symbol(password):
+    pass
+
+# VALID SYMBOLS 33, 35-38, 42-47, 58-64
+# OMIT 34, 39, 40, 41
+# NUMBERS 48-57
+
+# !@#$%^&*-+_.<>?;:=
